@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Frequência - Etec</title>
+    <link rel="shortcut icon" href="https://bkpsitecpsnew.blob.core.windows.net/uploadsitecps/sites/58/2024/03/Logo_CPS-01.png" type="image/x-icon">
+    <style>
+        /* CSS para estilização da página com a identidade da Etec */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 1rem;
+            box-sizing: border-box;
+        }
+
+        .container {
+            background: #ffffff;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+            border: 1px solid #dddfe2;
+        }
+
+        .logo-etec {
+            max-width: 250px; /* Ajusta o tamanho da logo */
+            margin-bottom: 1.5rem; /* Espaço abaixo da logo */
+        }
+
+        h1 {
+            color: #3d3d3d; /* Cinza escuro do logo da Etec */
+            margin-bottom: 0.5rem;
+            font-size: 1.8rem;
+        }
+
+        #descricaoMes {
+            color: #606770;
+            margin-bottom: 2rem;
+            font-size: 1rem;
+            min-height: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+            color: #4a4a4a;
+            font-size: 1.1rem;
+        }
+
+        input[type="number"], select {
+            width: 100%;
+            padding: 0.8rem;
+            border-radius: 6px;
+            border: 1px solid #dddfe2;
+            font-size: 1.1rem;
+            color: #1c1e21;
+            box-sizing: border-box;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        
+        input[type="number"] {
+             width: 120px;
+             text-align: center;
+             font-size: 1.5rem;
+             font-weight: bold;
+        }
+
+        input[type="number"]:focus, select:focus {
+            outline: none;
+            border-color: #b71c1c; /* Vermelho Etec no foco */
+            box-shadow: 0 0 0 2px rgba(183, 28, 28, 0.2);
+        }
+
+        button {
+            background-color: #b71c1c; /* Vermelho institucional da Etec/CPS */
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #9a1616; /* Vermelho mais escuro no hover */
+        }
+
+        #resultado {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background-color: #f0f2f5;
+            border-radius: 8px;
+            text-align: left;
+            display: none; /* Começa escondido */
+        }
+
+        #resultado p {
+            margin: 0.8rem 0;
+            font-size: 1.1rem;
+            color: #333;
+        }
+        
+        .alerta-frequencia {
+            font-weight: bold;
+            color: #b71c1c; /* Vermelho Etec */
+            background-color: #ffebee;
+            padding: 0.8rem;
+            border-radius: 6px;
+            border: 1px solid #b71c1c;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <img src="https://bkpsitecpsnew.blob.core.windows.net/uploadsitecps/sites/90/2024/03/etec-darcy_pereira_de_moraes.png" alt="Logo da Etec Darcy Pereira de Moraes" class="logo-etec">
+        
+        <h1>Calculadora de Frequência</h1>
+        <p id="descricaoMes">Escolha um mês para começar</p>
+
+        <div class="input-group">
+            <label for="mesSelect">Escolha o Mês:</label>
+            <select id="mesSelect">
+                <option value="" disabled selected>Selecione um mês</option>
+                <option value="2">Fevereiro</option>
+                <option value="3">Março</option>
+                <option value="4">Abril</option>
+                <option value="5">Maio</option>
+                <option value="6">Junho</option>
+                <option value="7">Julho</option>
+                <option value="8">Agosto</option>
+                <option value="9">Setembro</option>
+                <option value="10">Outubro</option>
+                <option value="11">Novembro</option>
+                <option value="12">Dezembro</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label for="diasFaltados">Digite a quantidade de dias que você faltou:</label>
+            <input type="number" id="diasFaltados" min="0" value="0" onfocus="this.select();">
+        </div>
+
+        <button onclick="calcularFrequencia()">Calcular Frequência</button>
+
+        <div id="resultado">
+            <p><strong>Total de aulas no mês:</strong> <span id="totalAulas"></span></p>
+            <p><strong>Aulas perdidas (faltas):</strong> <span id="aulasPerdidas"></span></p>
+            <p><strong>Sua frequência foi de:</strong> <span id="frequenciaPercentual"></span></p>
+            <p id="alerta"></p>
+        </div>
+    </div>
+
+    <script>
+        // --- INÍCIO DO CÓDIGO JAVASCRIPT ---
+        // Nenhuma alteração na lógica, apenas no visual.
+
+        const calendario2025 = {
+            '2': ["2025-02-05", "2025-02-06", "2025-02-07", "2025-02-10", "2025-02-11", "2025-02-12", "2025-02-13", "2025-02-14", "2025-02-17", "2025-02-18", "2025-02-19", "2025-02-20", "2025-02-21", "2025-02-22", "2025-02-24", "2025-02-25", "2025-02-26", "2025-02-27", "2025-02-28"],
+            '3': ["2025-03-06", "2025-03-07", "2025-03-10", "2025-03-11", "2025-03-12", "2025-03-13", "2025-03-14", "2025-03-17", "2025-03-18", "2025-03-19", "2025-03-20", "2025-03-21", "2025-03-24", "2025-03-25", "2025-03-26", "2025-03-27", "2025-03-28", "2025-03-31"],
+            '4': ["2025-04-01", "2025-04-02", "2025-04-03", "2025-04-04", "2025-04-07", "2025-04-08", "2025-04-09", "2025-04-10", "2025-04-11", "2025-04-14", "2025-04-15", "2025-04-16", "2025-04-17", "2025-04-22", "2025-04-23", "2025-04-24", "2025-04-25", "2025-04-28", "2025-04-29", "2025-04-30"],
+            '5': ["2025-05-05", "2025-05-06", "2025-05-07", "2025-05-08", "2025-05-09", "2025-05-10", "2025-05-12", "2025-05-13", "2025-05-14", "2025-05-15", "2025-05-16", "2025-05-19", "2025-05-20", "2025-05-21", "2025-05-22", "2025-05-23", "2025-05-24", "2025-05-26", "2025-05-27", "2025-05-28", "2025-05-29", "2025-05-30"],
+            '6': ["2025-06-02", "2025-06-03", "2025-06-04", "2025-06-05", "2025-06-06", "2025-06-09", "2025-06-10", "2025-06-11", "2025-06-12", "2025-06-13", "2025-06-14", "2025-06-16", "2025-06-17", "2025-06-18", "2025-06-23", "2025-06-24", "2025-06-25", "2025-06-26", "2025-06-27", "2025-06-30"],
+            '7': ["2025-07-28", "2025-07-29", "2025-07-30", "2025-07-31"],
+            '8': ["2025-08-01", "2025-08-04", "2025-08-05", "2025-08-06", "2025-08-07", "2025-08-08", "2025-08-11", "2025-08-12", "2025-08-13", "2025-08-14", "2025-08-15", "2025-08-18", "2025-08-19", "2025-08-20", "2025-08-21", "2025-08-22", "2025-08-25", "2025-08-26", "2025-08-27", "2025-08-28", "2025-08-29"],
+            '9': ["2025-09-01", "2025-09-02", "2025-09-03", "2025-09-04", "2025-09-05", "2025-09-08", "2025-09-09", "2025-09-10", "2025-09-11", "2025-09-12", "2025-09-15", "2025-09-16", "2025-09-17", "2025-09-18", "2025-09-19", "2025-09-22", "2025-09-23", "2025-09-24", "2025-09-25", "2025-09-26", "2025-09-29", "2025-09-30"],
+            '10': ["2025-10-01", "2025-10-02", "2025-10-03", "2025-10-06", "2025-10-07", "2025-10-08", "2025-10-09", "2025-10-10", "2025-10-11", "2025-10-13", "2025-10-14", "2025-10-16", "2025-10-17", "2025-10-20", "2025-10-21", "2025-10-22", "2025-10-23", "2025-10-24", "2025-10-28", "2025-10-29", "2025-10-30", "2025-10-31"],
+            '11': ["2025-11-01", "2025-11-03", "2025-11-04", "2025-11-06", "2025-11-07", "2025-11-10", "2025-11-11", "2025-11-12", "2025-11-13", "2025-11-14", "2025-11-17", "2025-11-18", "2025-11-19", "2025-11-24", "2025-11-25", "2025-11-26", "2025-11-27", "2025-11-28"],
+            '12': ["2025-12-01", "2025-12-02", "2025-12-03", "2025-12-04", "2025-12-05", "2025-12-08", "2025-12-09", "2025-12-10", "2025-12-11", "2025-12-12", "2025-12-13", "2025-12-15", "2025-12-16", "2025-12-17"]
+        };
+        const AULAS_POR_DIA = 6;
+
+        const mesSelect = document.getElementById('mesSelect');
+        mesSelect.addEventListener('change', limparResultados);
+
+        function limparResultados() {
+            document.getElementById('resultado').style.display = 'none';
+            document.getElementById('alerta').textContent = '';
+            document.getElementById('alerta').classList.remove('alerta-frequencia');
+            
+            const mesSelecionado = mesSelect.options[mesSelect.selectedIndex].text;
+            if (mesSelect.value) {
+                 document.getElementById('descricaoMes').textContent = `Calculando para o mês de ${mesSelecionado} de 2025.`;
+            } else {
+                 document.getElementById('descricaoMes').textContent = `Escolha um mês para começar`;
+            }
+        }
+
+        function calcularFrequencia() {
+            const mesValue = mesSelect.value;
+            if (!mesValue) {
+                showModal("Por favor, selecione um mês para calcular.");
+                return;
+            }
+
+            const diasLetivos = calendario2025[mesValue] || [];
+            const totalDiasLetivos = diasLetivos.length;
+            const totalAulas = totalDiasLetivos * AULAS_POR_DIA;
+
+            const diasFaltadosInput = document.getElementById('diasFaltados');
+            const diasFaltados = parseInt(diasFaltadosInput.value) || 0;
+            
+            if (diasFaltados < 0) {
+                showModal("O número de faltas não pode ser negativo.");
+                return;
+            }
+            if (diasFaltados > totalDiasLetivos) {
+                showModal(`O número de faltas (${diasFaltados}) não pode ser maior que o total de dias letivos do mês (${totalDiasLetivos}).`);
+                return;
+            }
+
+            const aulasPerdidas = diasFaltados * AULAS_POR_DIA;
+            const aulasPresentes = totalAulas - aulasPerdidas;
+            const frequencia = totalAulas > 0 ? (aulasPresentes / totalAulas) * 100 : 0;
+
+            const resultadoDiv = document.getElementById('resultado');
+            document.getElementById('totalAulas').textContent = totalAulas;
+            document.getElementById('aulasPerdidas').textContent = aulasPerdidas;
+            document.getElementById('frequenciaPercentual').textContent = `${frequencia.toFixed(2)}%`;
+            
+            const alertaP = document.getElementById('alerta');
+            alertaP.classList.remove('alerta-frequencia');
+            alertaP.textContent = "";
+
+            if (frequencia < 75) {
+                alertaP.textContent = "Atenção! Sua frequência está abaixo do mínimo de 75%.";
+                alertaP.classList.add('alerta-frequencia');
+            }
+
+            resultadoDiv.style.display = 'block';
+        }
+
+        function showModal(message) {
+            if (document.querySelector('.modal-overlay')) return;
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay';
+            overlay.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 1000;';
+            const modal = document.createElement('div');
+            modal.className = 'modal-content';
+            modal.style.cssText = 'background: white; padding: 2rem; border-radius: 8px; text-align: center; max-width: 90%; width: 400px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);';
+            const text = document.createElement('p');
+            text.textContent = message;
+            text.style.cssText = 'margin: 0 0 1.5rem 0; color: #333; font-size: 1.1rem;';
+            const closeButton = document.createElement('button');
+            closeButton.textContent = 'Entendi';
+            closeButton.onclick = () => document.body.removeChild(overlay);
+            modal.appendChild(text);
+            modal.appendChild(closeButton);
+            overlay.appendChild(modal);
+            document.body.appendChild(overlay);
+        }
+    </script>
+
+</body>
+</html>
